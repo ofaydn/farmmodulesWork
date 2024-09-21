@@ -38,7 +38,7 @@ def send_request(command):
 # Function to receive a response via RS485
 def receive_response():
     responses = []             # List to collect all valid responses
-    timeout = time.time() + 2  # 2-second window to collect responses
+    timeout = time.time() + 2  # 2-second timeout to collect responses
     while True:
         if ser.in_waiting > 0:  # Check if there is data available to read 
             try:
