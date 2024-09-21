@@ -1,9 +1,12 @@
+import copy
 import serial
 import time
 import RPi.GPIO as GPIO
+from mycodo.inputs.base_input import AbstractInput
 
 # RS485 Direction Control Pin
 RS485_DE_RE_PIN = 4
+
 
 def data():
     # Setup GPIO
@@ -14,12 +17,12 @@ def data():
     # Setup serial connection
     try:
         ser = serial.Serial(
-            port='/dev/serial0',  # Use the correct serial port
+            port="/dev/serial0",  # Use the correct serial port
             baudrate=19200,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
-            timeout=1
+            timeout=1,
         )
     except serial.SerialException as e:
         print(f"Failed to connect to serial port: {e}")
@@ -27,10 +30,10 @@ def data():
 
     # Function to send a request
     def send_request(command):
-        full_command = f'{command}\n'  # Create the full command string
+        full_command = f"{command}\n"  # Create the full command string
         GPIO.output(RS485_DE_RE_PIN, GPIO.HIGH)  # Switch to transmit mode
         time.sleep(0.05)
-        ser.write(full_command.encode('utf-8'))  # Send the command as bytes
+        ser.write(full_command.encode("utf-8"))  # Send the command as bytes
         print(f"Request sent: '{full_command.strip()}'")
         time.sleep(0.05)
         GPIO.output(RS485_DE_RE_PIN, GPIO.LOW)  # Switch back to listening mode
@@ -38,13 +41,13 @@ def data():
     # Function to receive the response
     def receive_response():
         timeout = time.time() + 2  # 2-second timeout
-        response = ''
+        response = ""
         while True:
             if ser.in_waiting > 0:
                 try:
-                    data = ser.readline().decode('utf-8', errors='ignore').strip()
-                    if data.isprintable():
-                        response = data
+                    d = ser.readline().decode("utf-8", errors="ignore").strip()
+                    if d.isprintable():
+                        response = d
                         break
                 except UnicodeDecodeError:
                     print("Received non-UTF-8 data, skipping...")
@@ -64,11 +67,7 @@ def data():
     return response
 
 
-# Mycodo Custom Input Implementation
-
-import copy
-from mycodo.inputs.base_input import AbstractInput
-#sudo apt-get -y install python3-rpi.gpio
+# Defining measurements
 measurements_dict = {0: {"measurement": "ion_concentration", "unit": "pH"}}
 
 INPUT_INFORMATION = {
@@ -81,7 +80,7 @@ INPUT_INFORMATION = {
     "url_manufacturer": "https://www.microchip.com/",
     "url_datasheet": "http://ww1.microchip.com/",
     "url_product_purchase": "https://www.adafruit.com/",
-    "dependencies_module": [('pip-pypi', 'RPi.GPIO','RPi.GPIO')],
+    "dependencies_module": [("pip-pypi", "RPi.GPIO", "RPi.GPIO")],
     "interfaces": ["I2C"],
     "options_enabled": ["period", "pre_output"],
     "options_disabled": ["interface"],
@@ -90,7 +89,7 @@ INPUT_INFORMATION = {
 
 class InputModule(AbstractInput):
     def __init__(self, input_dev, testing=False):
-        super(InputModule, self).__init__(input_dev, testing=testing, name=__name__)
+        super().__init__(input_dev, testing=testing, name=__name__)
         if not testing:
             self.initialize_input()
 
@@ -103,7 +102,9 @@ class InputModule(AbstractInput):
             response = data()  # Fetch the data from RS485 sensor
             if response:
                 self.logger.debug(f"Received response: {response}")
-                response_value = float(response)  # Assuming the response is a float (adjust as necessary)
+                response_value = float(
+                    response
+                )  # Assuming the response is a float (adjust as necessary)
                 self.value_set(0, response_value)
             else:
                 self.logger.debug("No valid response received.")
