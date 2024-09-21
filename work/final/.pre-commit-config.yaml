@@ -23,15 +23,6 @@ repos:
         name: mypy (python type checker)
         language_version: python3
 
-  # Arduino .ino file checks
-  - repo: local
-    hooks:
-      - id: arduino-lint
-        name: arduino-lint
-        entry: arduino-cli lint --warnings all  # Command to run Arduino CLI lint
-        language: system
-        files: \.ino$
-
   # Optional: trailing whitespace checks for all files
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0

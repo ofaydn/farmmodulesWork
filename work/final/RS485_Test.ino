@@ -13,7 +13,7 @@ void loop() {
   if (Serial.available() > 0) {
     char incomingByte = Serial.read();
     request += incomingByte;
-    
+
     if (incomingByte == '\n') {  // End of the command
       Serial.print("Received full request: ");
       Serial.println(request);

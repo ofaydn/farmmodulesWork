@@ -17,10 +17,10 @@ void loop() {
   // Check if data is available from the sensor
   if (atlasSensor.available() > 0) {
     String sensorData = atlasSensor.readStringUntil('\r');  // Read data until carriage return
-    Serial.print("Sensor Data: "); 
+    Serial.print("Sensor Data: ");
     Serial.println(sensorData); // Print the sensor data to the Serial Monitor
   }
-  
+
   // Check if data is available from the Serial Monitor (PC)
   if (Serial.available() > 0) {
     String command = Serial.readStringUntil('\n');          // Read the command from the Serial Monitor

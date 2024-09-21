@@ -32,7 +32,7 @@ void loop() {
     char incomingByte = Serial.read();      // Read incoming byte from RS485
     request += incomingByte;                // Append byte to request string
     String remainder = "";
-    
+
     if (incomingByte == '\n') {             // Check for end of command
       if (request.startsWith("do")) {
         remainder = request.substring(2);   // Command for DO sensor
@@ -51,13 +51,13 @@ void loop() {
       delay(50);  // Allow time for the sensor to process the command
     }
   }
-  
+
   // Check for data from the sensors
   if (atlasdo.isListening() && atlasdo.available() > 0) {
     sensorData = atlasdo.readStringUntil('\r');  // Read DO sensor data
 
     digitalWrite(rs485_pin, HIGH);               // Switch to transmit mode for RS485
-    delay(50); 
+    delay(50);
     Serial.println(sensorData);                  // Send the data to RS485
     delay(50);
     digitalWrite(rs485_pin, LOW);                // Switch back to receive mode
@@ -68,7 +68,7 @@ void loop() {
     sensorData = atlasph.readStringUntil('\r');  // Read pH sensor data
 
     digitalWrite(rs485_pin, HIGH);               // Switch to transmit mode for RS485
-    delay(50); 
+    delay(50);
     Serial.println(sensorData);                  // Send the data to RS485
     delay(50);
     digitalWrite(rs485_pin, LOW);                // Switch back to receive mode
