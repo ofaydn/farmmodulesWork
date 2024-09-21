@@ -1,74 +1,40 @@
-default_language_version:
-  python: python3
-
-ci:
-  autofix_prs: true
-  autoupdate_commit_msg: "[pre-commit.ci] pre-commit suggestions"
-  autoupdate_schedule: "monthly"
-  # submodules: true
-
-exclude: ^Mycodo/
+# pre-commit-config.yaml
 
 repos:
+  # Python linters and formatters
+  - repo: https://github.com/psf/black
+    rev: 23.7.0  # You can specify the version here
+    hooks:
+      - id: black
+        name: black (python formatter)
+        language_version: python3  # Ensure Python 3 is used
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.1.0  # Latest release at the time of writing
+    hooks:
+      - id: flake8
+        name: flake8 (python linter)
+        language_version: python3  # Ensure Python 3 is used
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.5.1  # Latest release
+    hooks:
+      - id: mypy
+        name: mypy (python type checker)
+        language_version: python3
+
+  # Arduino .ino file checks
+  - repo: local
+    hooks:
+      - id: arduino-lint
+        name: arduino-lint
+        entry: arduino-cli lint --warnings all  # Command to run Arduino CLI lint
+        language: system
+        files: \.ino$
+
+  # Optional: trailing whitespace checks for all files
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v4.4.0
     hooks:
-      - id: end-of-file-fixer
       - id: trailing-whitespace
-      - id: check-case-conflict
-      - id: check-yaml
-      - id: check-toml
-      - id: check-json
-      - id: check-added-large-files
-      - id: check-docstring-first
-      - id: detect-private-key
-
-  - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.10.0
-    hooks:
-      - id: python-use-type-annotations
-
-  - repo: https://github.com/myint/docformatter
-    rev: v1.7.5
-    hooks:
-      - id: docformatter
-        args: [--in-place]
-
-  - repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.17
-    hooks:
-      - id: mdformat
-        additional_dependencies:
-          - mdformat-gfm
-          - mdformat-black
-          - mdformat_frontmatter
-        exclude: CHANGELOG.md
-
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.5.3
-    hooks:
-      # try to fix what is possible
-      - id: ruff
-        args: ["--fix"]
-      # perform formatting updates
-      - id: ruff-format
-      # validate if all is fine with preview mode
-      - id: ruff
-
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.1.0
-    hooks:
-      - id: prettier
-        files: \.(json|yml|yaml|toml)
-        # https://prettier.io/docs/en/options.html#print-width
-        args: ["--print-width=120"]
-
-  - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: 2.1.4
-    hooks:
-      - id: pyproject-fmt
-        additional_dependencies: [tox]
-  - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.18
-    hooks:
-      - id: validate-pyproject
+      - id: end-of-file-fixer
