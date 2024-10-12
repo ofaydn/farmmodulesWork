@@ -3,7 +3,7 @@ import RPi.GPIO as GPIO
 import time
 
 # RS485 Direction Control Pin
-RS485_DE_RE_PIN = 4
+RS485_DE_RE_PIN = 17
 
 # Setup GPIO
 GPIO.setmode(GPIO.BCM)
@@ -14,7 +14,7 @@ GPIO.output(RS485_DE_RE_PIN, GPIO.LOW)  # Start in listening mode
 try:
     ser = serial.Serial(
         port='/dev/serial0',  # Use the correct serial port
-        baudrate=19200,
+        baudrate=9600,
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
         bytesize=serial.EIGHTBITS,
