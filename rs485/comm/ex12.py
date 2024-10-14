@@ -13,7 +13,7 @@ GPIO.output(RS485_DE_RE_PIN, GPIO.LOW)  # Start in listening mode
 # Setup serial connection
 try:
     ser = serial.Serial(
-        port='/dev/serial0',  # Use the correct serial port
+        port='/dev/ttyS0',  # Use the correct serial port
         baudrate=9600,
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
