@@ -17,19 +17,39 @@ from mycodo.utils.system_pi import str_is_float
 
 # Measurements
 measurements_dict = {
-    0: {
+    0:{
+        'measurement': 'ammonia',
+        'unit': 'ppm'
+    },
+    1:{
+        'measurement':'nitrates',
+        'unit': 'mg_L'
+    },
+    2: {
         'measurement': 'dissolved_oxygen',
         'unit': 'mg_L'
-    }
+    },
+    3:{
+        'measurement':'ion_concentration',
+        'unit':'pH'
+    },
+    
+    4:{
+        'measurement':'temperature',
+        'unit':'C'
+    },
+    
+    
+
 }
 
 # Input information
 INPUT_INFORMATION = {
-    'input_name_unique': 'ATLAS_DO',
-    'input_manufacturer': 'Atlas Scientific',
-    'input_name': 'Atlas DO',
+    'input_name_unique': 'FarmModules_SLA1',
+    'input_manufacturer': 'Farm Modules',
+    'input_name': 'FM_SLA1',
     'input_library': 'pylibftdi/fcntl/io/serial',
-    'measurements_name': 'Dissolved Oxygen',
+    'measurements_name': ['Dissolved Oxygen','Ion Concentraiton','Ammonia','Nitrates','Temperature'],
     'measurements_dict': measurements_dict,
     'url_manufacturer': 'https://www.atlas-scientific.com/dissolved-oxygen.html',
     'url_datasheet': 'https://www.atlas-scientific.com/files/DO_EZO_Datasheet.pdf',
@@ -88,36 +108,36 @@ INPUT_INFORMATION = {
             'id': 'calibrate_air',
             'type': 'button',
             'wait_for_return': True,
-            'name': 'Calibrate (Air)'
+            'name': 'DO_Calibrate (Air)'
         },
         {
             'id': 'calibrate_0mg',
             'type': 'button',
             'wait_for_return': True,
-            'name': 'Calibrate (0 mg/L)'
+            'name': 'DO_Calibrate (0 mg/L)'
         },
         {
             'id': 'calibrate_clear',
             'type': 'button',
             'wait_for_return': True,
-            'name': lazy_gettext('Clear Calibration')
+            'name': lazy_gettext('DO_Clear Calibration')
         },
         {
             'type': 'message',
             'default_value': """The I2C address can be changed. Enter a new address in the 0xYY format (e.g. 0x22, 0x50), then press Set I2C Address. Remember to deactivate and change the I2C address option after setting the new address."""
         },
-        {
-            'id': 'new_i2c_address',
-            'type': 'text',
-            'default_value': '0x66',
-            'name': lazy_gettext('New I2C Address'),
-            'phrase': lazy_gettext('The new I2C to set the device to')
-        },
-        {
-            'id': 'set_i2c_address',
-            'type': 'button',
-            'name': lazy_gettext('Set I2C Address')
-        }
+       # {
+       #     'id': 'new_i2c_address',
+       #     'type': 'text',
+       #     'default_value': '0x66',
+       #     'name': lazy_gettext('New I2C Address'),
+       #     'phrase': lazy_gettext('The new I2C to set the device to')
+       # },
+       # {
+       #     'id': 'set_i2c_address',
+       #     'type': 'button',
+       #     'name': lazy_gettext('Set I2C Address')
+       # }
     ]
 }
 
