@@ -1,6 +1,62 @@
 # coding=utf-8
 import copy
 import time
+import serial
+import time
+
+import RPi.GPIO as GPIO
+import copy
+
+RS485_DE_RE_PIN = 17
+
+def setup_gpio():
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(RS485_DE_RE_PIN, GPIO.OUT)
+    GPIO.output(RS485_DE_RE_PIN, GPIO.LOW)
+
+def data_transaction(rs_command):
+    
+    setup_gpio()
+
+    try:
+        ser = serial.Serial(
+            port='/dev/serial0',  # serial port
+            baudrate=9600,        # The baudrate for the RS485 communication
+            #parity=serial.PARITY_NONE,
+            #stopbits=serial.STOPBITS_ONE,
+            #bytesize=serial.EIGHTBITS,
+            timeout=1
+        )
+    except serial.SerialException as e:
+        print(f"Failed to connect to serial port: {e}")
+        return None
+    
+    def send_request(command):
+        full_command = f'{command}\n'
+        GPIO.output(RS485_DE_RE_PIN, GPIO.HIGH)  # Switch to transmit mode
+        time.sleep(0.05)
+        ser.write(full_command.encode('utf-8'))  # Send the command
+        time.sleep(0.05)
+        GPIO.output(RS485_DE_RE_PIN, GPIO.LOW)  # Switch back to receive mode
+    
+    def receive_response(timeout=3):
+    # Wait for a response for up to 'timeout' seconds
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            time.sleep(0.1)  # Small delay to avoid excessive polling
+            if ser.in_waiting > 0:
+                message = ser.readline().decode('utf-8', errors='ignore').strip()
+                if message:
+                    return message
+                else:
+                    return 0
+            
+    send_request(rs_command)
+    response = receive_response(3)
+    return response
+
+
+
 
 from flask_babel import lazy_gettext
 
@@ -38,8 +94,6 @@ measurements_dict = {
         'measurement':'temperature',
         'unit':'C'
     },
-    
-    
 
 }
 
@@ -55,13 +109,13 @@ INPUT_INFORMATION = {
     'url_datasheet': 'https://www.atlas-scientific.com/files/DO_EZO_Datasheet.pdf',
 
     'options_enabled': [
-        'ftdi_location',
-        'i2c_location',
-        'uart_location',
-        'uart_baud_rate',
+        #'ftdi_location',
+        #'i2c_location',
+        #'uart_location',
+        #'uart_baud_rate',
         'period',
-        'calibration_measurement',
-        'pre_output'
+        #'calibration_measurement',
+        #'pre_output'
     ],
     'options_disabled': ['interface'],
 
@@ -69,12 +123,13 @@ INPUT_INFORMATION = {
         ('pip-pypi', 'pylibftdi', 'pylibftdi==0.20.0')
     ],
 
-    'interfaces': ['I2C', 'UART', 'FTDI'],
+    'interfaces': ['I2C'],
     'i2c_location': ['0x66'],
     'i2c_address_editable': True,
     'uart_location': '/dev/ttyAMA0',
     'uart_baud_rate': 9600,
     'ftdi_location': '/dev/ttyUSB0',
+
 
     'custom_options': [
         {
@@ -123,6 +178,12 @@ INPUT_INFORMATION = {
             'name': lazy_gettext('DO_Clear Calibration')
         },
         {
+            'id': 'rs_calibrate',
+            'type': 'button',
+            'wait_for_return': True,
+            'name': 'RS Calibrate Test'
+        },
+        {
             'type': 'message',
             'default_value': """The I2C address can be changed. Enter a new address in the 0xYY format (e.g. 0x22, 0x50), then press Set I2C Address. Remember to deactivate and change the I2C address option after setting the new address."""
         },
@@ -143,6 +204,7 @@ INPUT_INFORMATION = {
 
 
 class InputModule(AbstractInput):
+
     """A sensor support class that monitors the Atlas Scientific sensor DO."""
     def __init__(self, input_dev, testing=False):
         super().__init__(input_dev, testing=testing, name=__name__)
@@ -288,6 +350,7 @@ class InputModule(AbstractInput):
         self.calibrate("Cal,clear")
 
     def set_i2c_address(self, args_dict):
+
         if 'new_i2c_address' not in args_dict:
             self.logger.error("Cannot set new I2C address without an I2C address")
             return
@@ -299,3 +362,12 @@ class InputModule(AbstractInput):
             self.atlas_device = None
         except:
             self.logger.exception("Exception changing I2C address")
+
+    def rs_calibrate(self, args_dict):
+        command = "sla1_do_cal_7"
+        cal_response = data_transaction(command)
+        self.logger.debug(f"Command to send: {command}")
+        self.logger.info(f"Command returned: {cal_response}")
+        self.logger.info(f"Device Calibrated?: {cal_response}")
+        return f"Command: {command}, Returned: {cal_response}, Calibrated?: {cal_response}"
+        
