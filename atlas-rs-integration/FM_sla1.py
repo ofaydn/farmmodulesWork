@@ -157,35 +157,37 @@ INPUT_INFORMATION = {
     'custom_commands': [
         {
             'type': 'message',
-            'default_value': """A one- or two-point calibration can be performed. After exposing the probe to air for 30 seconds until readings stabilize, press Calibrate (Air). If you require accuracy below 1.0 mg/L, you can place the probe in a 0 mg/L solution for 30 to 90 seconds until readings stabilize, then press Calibrate (0 mg/L). You can also clear the currently-saved calibration by pressing Clear Calibration. Status messages will be sent to the Daemon Log, accessible from Config -> Mycodo Logs -> Daemon Log."""
+            'default_value': """These buttons are used for reading data from the sensor, in the following days buttons will be added for calibration and such."""
         },
         {
-            'id': 'calibrate_air',
+            'id': 'read_do',
             'type': 'button',
             'wait_for_return': True,
-            'name': 'DO_Calibrate (Air)'
+            'name': 'Read Atlas Dissolved Oxygen Sensor'
         },
         {
-            'id': 'calibrate_0mg',
+            'id': 'read_ph',
             'type': 'button',
             'wait_for_return': True,
-            'name': 'DO_Calibrate (0 mg/L)'
+            'name': 'Read Atlas pH Sensor'
         },
         {
-            'id': 'calibrate_clear',
+            'id': 'read_ammonia',
             'type': 'button',
             'wait_for_return': True,
-            'name': lazy_gettext('DO_Clear Calibration')
+            'name': 'Read Ammonia Sensor'
         },
         {
-            'id': 'rs_calibrate',
+            'id': 'read_nitrates',
             'type': 'button',
             'wait_for_return': True,
-            'name': 'RS Calibrate Test'
+            'name': 'Read Nitrates Sensor'
         },
         {
-            'type': 'message',
-            'default_value': """The I2C address can be changed. Enter a new address in the 0xYY format (e.g. 0x22, 0x50), then press Set I2C Address. Remember to deactivate and change the I2C address option after setting the new address."""
+            'id': 'read_temp',
+            'type': 'button',
+            'wait_for_return': True,
+            'name': 'Read Temperature Sensor'
         },
        # {
        #     'id': 'new_i2c_address',
@@ -362,12 +364,43 @@ class InputModule(AbstractInput):
             self.atlas_device = None
         except:
             self.logger.exception("Exception changing I2C address")
-
-    def rs_calibrate(self, args_dict):
-        command = "sla1_do_cal_7"
+    
+    def read_do(self, args_dict):
+        command = "sla1_do_r"
         cal_response = data_transaction(command)
         self.logger.debug(f"Command to send: {command}")
         self.logger.info(f"Command returned: {cal_response}")
         self.logger.info(f"Device Calibrated?: {cal_response}")
-        return f"Command: {command}, Returned: {cal_response}, Calibrated?: {cal_response}"
+        return f"Command: {command}, Returned: {cal_response}"
+    
+    def read_ph(self, args_dict):
+        command = "sla1_ph_r"
+        cal_response = data_transaction(command)
+        self.logger.debug(f"Command to send: {command}")
+        self.logger.info(f"Command returned: {cal_response}")
+        self.logger.info(f"Device Calibrated?: {cal_response}")
+        return f"Command: {command}, Returned: {cal_response}"
+
+    def read_ammonia(self, args_dict):
+        command = "sla1_ammonia_r"
+        cal_response = data_transaction(command)
+        self.logger.debug(f"Command to send: {command}")
+        self.logger.info(f"Command returned: {cal_response}")
+        self.logger.info(f"Device Calibrated?: {cal_response}")
+        return f"Command: {command}, Returned: {cal_response}"
         
+    def read_nitrates(self, args_dict):
+        command = "sla1_nitrates_r"
+        cal_response = data_transaction(command)
+        self.logger.debug(f"Command to send: {command}")
+        self.logger.info(f"Command returned: {cal_response}")
+        self.logger.info(f"Device Calibrated?: {cal_response}")
+        return f"Command: {command}, Returned: {cal_response}"
+    
+    def read_temp(self, args_dict):
+        command = "sla1_temp_r"
+        cal_response = data_transaction(command)
+        self.logger.debug(f"Command to send: {command}")
+        self.logger.info(f"Command returned: {cal_response}")
+        self.logger.info(f"Device Calibrated?: {cal_response}")
+        return f"Command: {command}, Returned: {cal_response}"
