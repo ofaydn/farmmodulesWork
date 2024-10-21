@@ -11,7 +11,7 @@ void setup() {
     Serial.begin(9600);
     pinMode(RS485_PIN, OUTPUT);
     digitalWrite(RS485_PIN, LOW); // Start in receive mode
-    Serial.println("SLA1 Ready.");
+    Serial.println("SLA2 Ready.");
     randomSeed(analogRead(A0)); 
 }
 
@@ -32,7 +32,7 @@ void loop() {
 void processRequest(char* request) {
     Serial.println("Received full request: " + String(request)); // Convert to String for printing
 
-    if (strncmp(request, "sla1", 4) == 0) {
+    if (strncmp(request, "sla2", 4) == 0) {
         char* remainingRequest = request + 4;  // Skip "sla1"
 
         if (strncmp(remainingRequest, "_do", 3) == 0) {
@@ -46,7 +46,7 @@ void processRequest(char* request) {
         } else if (strncmp(remainingRequest, "_temp", 5) == 0) {
             manageTemp(remainingRequest + 5);
         } else {
-            sendRSData("SLA1 unrecognized sub-command.");
+            sendRSData("SLA2 unrecognized sub-command.");
         }
       request[0] = '\0';
     }
@@ -58,7 +58,7 @@ void manageAtlasDO(char* request) {
     const char* data = cdata.c_str();
     sendRSData(data);
   } else {
-    sendRSData("{\"*Error\":\"Invalid request from SLA1-DO\"}");
+    sendRSData("{\"*Error\":\"Invalid request from SLA2-DO\"}");
   }
 }
 
@@ -68,7 +68,7 @@ void manageAtlasPH(char* request) {
     const char* data = cdata.c_str();
     sendRSData(data);
   } else {
-    sendRSData("{\"*Error\":\"Invalid request from SLA1-PH\"}");
+    sendRSData("{\"*Error\":\"Invalid request from SLA2-PH\"}");
   }
 }
 
@@ -78,7 +78,7 @@ void manageAmmonia(char* request) {
     const char* data = cdata.c_str();
     sendRSData(data);
   } else {
-    sendRSData("{\"*Error\":\"Invalid request from SLA1-Ammonia\"}");
+    sendRSData("{\"*Error\":\"Invalid request from SLA2-Ammonia\"}");
   }
 }
 
@@ -88,7 +88,7 @@ void manageNitrates(char* request) {
     const char* data = cdata.c_str();
     sendRSData(data);
   } else {
-    sendRSData("{\"*Error\":\"Invalid request from SLA1-Nitrates\"}");
+    sendRSData("{\"*Error\":\"Invalid request from SLA2-Nitrates\"}");
   }
 }
 
@@ -98,7 +98,7 @@ void manageTemp(char* request) {
     const char* data = cdata.c_str();
     sendRSData(data);
   } else {
-    sendRSData("{\"*Error\":\"Invalid request from SLA1-Temp\"}");
+    sendRSData("{\"*Error\":\"Invalid request from SLA2-Temp\"}");
   }
 }
 
