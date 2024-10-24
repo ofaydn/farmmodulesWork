@@ -66,28 +66,36 @@ def list_devices():
 
 try:
     while True:
-        command = input("Enter command pls: ")
+        try:
+            command = input("Enter command pls: ")
 
-        if command == "verify":
-            device = verify_arduino()
-            if device:
-                print(f"{device.name} connected.")
+            if command == "verify":
+                device = verify_arduino()
+                if device:
+                    print(f"{device.name} connected.")
+                else:
+                    print("Arduino not verified.")
+            
+            elif command == "list_devices":
+                list_devices()
+
             else:
-                print("Arduino not verified.")
-        
-        elif command == "list_devices":
-            list_devices()
+                send_request(command)
 
-        else:
-            send_request(command)
-
-            # Check for response
-            time.sleep(0.1)
-            if ser.in_waiting > 0:
-                message = ser.readline().decode('utf-8', errors='ignore').strip()
-                if message:
-                    print(f"Received message: {message}")
+                # Check for response
+                time.sleep(0.1)
+                if ser.in_waiting > 0:
+                    message = ser.readline().decode('utf-8', errors='ignore').strip()
+                    if message:
+                        print(f"Received message: {message}")
+        except EOFError:
+            print("Input interrupted (EOFError). Exiting.")
+            break
 
 except KeyboardInterrupt:
+    print("Process interrupted by user (KeyboardInterrupt).")
+
+finally:
+    print("Cleaning up GPIO...")
     ser.close()
     GPIO.cleanup()
