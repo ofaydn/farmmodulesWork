@@ -38,19 +38,22 @@ class ArduinoDevice:
 
 
 def verify_arduino():
-    send_request("sla2_verify")
+    send_request("sla1_verify")
 
     time.sleep(0.1)
     if ser.in_waiting > 0:
         response = ser.readline().decode('utf-8', errors='ignore').strip()
-        print(f"Received verification response: {response}")
+        print(f"Raw response: {response}")  # Print the raw response to debug
+
         try:
-            data = json.loads(response)
+            data = json.loads(response)  # Attempt to parse the JSON
+            print(f"Parsed JSON: {data}")  # Print the parsed data
             if data.get("verify"):
                 return ArduinoDevice("sla1", data.get("sensors"))
         except json.JSONDecodeError:
             print("Failed to decode JSON response.")
     return None
+
 
 def send_request(command):
     full_command = f'{command}\n'
