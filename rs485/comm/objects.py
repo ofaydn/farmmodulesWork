@@ -38,7 +38,7 @@ class ArduinoDevice:
 
 
 def verify_arduino():
-    send_request("sla1_verify")
+    send_request("sla2_verify")
 
     time.sleep(0.1)
     if ser.in_waiting > 0:
